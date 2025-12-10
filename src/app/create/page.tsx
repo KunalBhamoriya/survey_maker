@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface Question {
     id: string;
@@ -12,7 +13,17 @@ interface Question {
 }
 
 export default function CreateSurvey() {
+    const { data: session, status } = useSession();
     const router = useRouter();
+
+    if (status === 'loading') {
+        return <p>Loading...</p>;
+    }
+
+    if (status === 'unauthenticated') {
+        router.push('/login');
+        return null;
+    }
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
